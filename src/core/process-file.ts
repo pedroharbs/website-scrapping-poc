@@ -27,12 +27,14 @@ export async function processFile(filePath: string, content: string | Buffer, as
       
       const finalFontUrl = getPathToFileFromUrl(`${asset.domain}${fontRelativePath}`)
       
-      promises.push(fetchData(finalFontUrl.url(), 'arrayBuffer').then(async data => {
-        const filePath = path.join(outputDir, finalFontUrl.path);
-
-        fs.ensureDirSync(path.dirname(filePath));
-        await fs.writeFile(filePath, data);
-      }));
+      if (!finalFontUrl.url().match(/data:[a-zA-Z0-9+.-]+\/[a-zA-Z0-9+.-]+(?:;[^,]*)?(?:,[^"]*)/)) {
+        promises.push(fetchData(finalFontUrl.url(), 'arrayBuffer').then(async data => {
+          const filePath = path.join(outputDir, finalFontUrl.path);
+          
+          fs.ensureDirSync(path.dirname(filePath));
+          await fs.writeFile(filePath, data);
+        }));
+      }
 
       return match;
     });
