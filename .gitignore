@@ -1,3 +1,4 @@
 node_modules
-downloaded_sites/*
-!/downloaded_sites/.gitkeep
+dist
+output_sites/*
+!/output_sites/.gitkeep
