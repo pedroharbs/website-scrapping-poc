@@ -4,6 +4,7 @@ import { fetchData } from "@/utils/fetch";
 import fs from "fs";
 import path from "path";
 import { links } from "@/core/index";
+import { isValidURL } from "@/utils/url";
 
 /**
  * Retrieve all JS, CSS, images and other assets.
@@ -19,9 +20,11 @@ export async function retrieveTargetPage(targetUrl: string, outputDir: string) {
   const jsSources = $('script[src]');
   if (jsSources.length) {
     jsSources.each((_, element) => {
-      const src = $(element).attr('src');
+      let src = $(element).attr('src');
   
       if (src) {
+        const isRelative = !isValidURL(src);
+        if (isRelative) src = new URL(src, targetUrl).href;
         const asset = getPathToFileFromUrl(src);
         links.js.push(asset);
         $(element).attr('src', `.${asset.path}`);
@@ -33,9 +36,11 @@ export async function retrieveTargetPage(targetUrl: string, outputDir: string) {
   const cssSources = $('link[rel="stylesheet"]');
   if (cssSources.length) {
     cssSources.each((_, element) => {
-      const href = $(element).attr('href');
+      let href = $(element).attr('href');
   
       if (href) {
+        const isRelative = !isValidURL(href);
+        if (isRelative) href = new URL(href, targetUrl).href;
         const asset = getPathToFileFromUrl(href);
         links.css.push(asset);
         $(element).attr('href', `.${asset.path}`);
@@ -47,9 +52,12 @@ export async function retrieveTargetPage(targetUrl: string, outputDir: string) {
   const imageSources = $('img[src]');
   if (imageSources.length) {
     imageSources.each((_, element) => {
-      const src = $(element).attr('src');
+      let src = $(element).attr('src');
   
       if (src) {
+        const isRelative = !isValidURL(src);
+        if (isRelative) src = new URL(src, targetUrl).href;
+
         const asset = getPathToFileFromUrl(src);
         links.images.push(asset);
         $(element).attr('src', `.${asset.path}`);
@@ -71,12 +79,15 @@ export async function retrieveTargetPage(targetUrl: string, outputDir: string) {
   }
 
   // Retrieve all video and audio sources.
-  const videoAndAudioSources = $('video source, audio source, source');
+  const videoAndAudioSources = $('video source, audio source, source, lottie-player');
   if (videoAndAudioSources.length) {
     videoAndAudioSources.each((_, element) => {
-      const src = $(element).attr('src');
+      let src = $(element).attr('src');
   
       if (src) {
+        console.log(src)
+        const isRelative = !isValidURL(src);
+        if (isRelative) src = new URL(src, targetUrl).href;
         const asset = getPathToFileFromUrl(src);
         links.others.push(asset);
         $(element).attr('src', `.${asset.path}`);

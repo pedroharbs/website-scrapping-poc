@@ -43,4 +43,4 @@ async function main(url: string) {
   console.log('[] - Process finished at:', formatDate(endDate), 'and took: ', formatDuration(endTime - startTime));
 }
 
-main('https://example.com/');
+main('https://curso.programacaoweb.com.br/');
